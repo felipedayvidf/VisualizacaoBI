@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Rotator</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    iframe, img {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: contain;
+      background: black;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script>
+    const slides = [
+      {
+        type: "iframe",
+        src: "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9",
+        duration: 4 * 60 * 1000 // 4 minutos
+      },
+      {
+        type: "image",
+        src: "PRÉ-OPERAÇÃO.png",
+        duration: 1 * 60 * 1000 // 1 minuto
+      },
+      {
+        type: "iframe",
+        src: "https://app.powerbi.com/view?r=eyJrIjoiMWU4OTNmNjYtZTIzZi00MmM1LWE5YmEtYjlkMGRhOGQ0N2EyIiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9",
+        duration: 5 * 60 * 1000 // 5 minutos
+      }
+    ];
+
+    let index = 0;
+    const container = document.getElementById("container");
+
+    function renderSlide() {
+      const current = slides[index];
+
+      container.innerHTML = "";
+
+      let element;
+
+      if (current.type === "iframe") {
+        element = document.createElement("iframe");
+        element.src = current.src;
+      }
+
+      if (current.type === "image") {
+        element = document.createElement("img");
+        element.src = current.src;
+      }
+
+      container.appendChild(element);
+
+      setTimeout(() => {
+        index = (index + 1) % slides.length;
+        renderSlide();
+      }, current.duration);
+    }
+
+    renderSlide();
+  </script>
+</body>
+</html>
