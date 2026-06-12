@@ -6,6 +6,7 @@
   <title>Dashboard Rotator</title>
 
   <style>
+    /* Remove margens e deixa fundo preto */
     html, body {
       margin: 0;
       padding: 0;
@@ -15,17 +16,30 @@
       overflow: hidden;
     }
 
+    /* Container principal */
     #container {
       width: 100vw;
       height: 100vh;
+      position: relative;
     }
 
-    iframe, img {
+    /* Classe base dos slides */
+    .slide {
+      position: absolute;
       width: 100%;
       height: 100%;
       border: none;
       object-fit: contain;
       background: black;
+
+      opacity: 0; /* começa invisível */
+      transition: opacity 1s ease-in-out; /* efeito fade */
+    }
+
+    /* Slide ativo (visível) */
+    .active {
+      opacity: 1;
+      z-index: 2;
     }
   </style>
 </head>
@@ -34,53 +48,136 @@
   <div id="container"></div>
 
   <script>
-    const slides = [
+    // =============================
+    // CONFIGURAÇÃO DOS DASHBOARDS
+    // =============================
+
+    const dashboards = [
       {
-        type: "iframe",
-        src: "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9",
-        duration: 1 * 60 * 1000 // 4 minutos
+        src: "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9"
       },
       {
-        type: "image",
-        src: "bebagua.png",
-        duration: 1 * 60 * 1000 // 1 minuto
-      },
-      {
-        type: "iframe",
-        src: "https://app.powerbi.com/view?r=eyJrIjoiMWU4OTNmNjYtZTIzZi00MmM1LWE5YmEtYjlkMGRhOGQ0N2EyIiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9",
-        duration: 1 * 60 * 1000 // 5 minutos
+        src: "https://app.powerbi.com/view?r=eyJrIjoiMWU4OTNmNjYtZTIzZi00MmM1LWE5YmEtYjlkMGRhOGQ0N2EyIiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9"
       }
     ];
 
+    // Tempo de exibição
+    const tempoDashboard = 5 * 60 * 1000; // 5 minutos
+    const tempoImagem = 1 * 60 * 1000;    // 1 minuto
+
+    // =============================
+    // CONTROLE DE ESTADO
+    // =============================
+
     let index = 0;
+    let ciclosCompletos = 0;
+
     const container = document.getElementById("container");
+    let currentElement = null;
 
-    function renderSlide() {
-      const current = slides[index];
+    // =============================
+    // FUNÇÃO DE TRANSIÇÃO (FADE)
+    // =============================
+    function trocarSlide(novoElemento) {
+      // aplica estilo base
+      novoElemento.classList.add("slide");
 
-      container.innerHTML = "";
+      // adiciona ao DOM
+      container.appendChild(novoElemento);
 
-      let element;
-
-      if (current.type === "iframe") {
-        element = document.createElement("iframe");
-        element.src = current.src;
-      }
-
-      if (current.type === "image") {
-        element = document.createElement("img");
-        element.src = current.src;
-      }
-
-      container.appendChild(element);
-
+      // dispara fade-in
       setTimeout(() => {
-        index = (index + 1) % slides.length;
-        renderSlide();
-      }, current.duration);
+        novoElemento.classList.add("active");
+      }, 10);
+
+      // remove o antigo com fade-out
+      if (currentElement) {
+        currentElement.classList.remove("active");
+
+        setTimeout(() => {
+          if (currentElement && currentElement.parentNode) {
+            currentElement.remove();
+          }
+        }, 1000);
+      }
+
+      currentElement = novoElemento;
     }
 
-    renderSlide();
+    // =============================
+    // MOSTRAR DASHBOARD (BI)
+    // =============================
+    function mostrarDashboard() {
+      const current = dashboards[index];
+
+      const iframe = document.createElement("iframe");
+
+      // truque para evitar cache travado do Power BI
+      iframe.src = current.src + "&t=" + new Date().getTime();
+
+      trocarSlide(iframe);
+
+      setTimeout(() => {
+        index++;
+
+        // se terminou a lista → ciclo completo
+        if (index >= dashboards.length) {
+          index = 0;
+          ciclosCompletos++;
+
+          // a cada 3 ciclos → mostrar imagem
+          if (ciclosCompletos === 3) {
+            ciclosCompletos = 0;
+            return mostrarImagem();
+          }
+        }
+
+        mostrarDashboard();
+      }, tempoDashboard);
+    }
+
+    // =============================
+    // MOSTRAR IMAGEM (ÁGUA)
+    // =============================
+    function mostrarImagem() {
+      const img = document.createElement("img");
+
+      // IMPORTANTE: nome do arquivo deve ser igual no GitHub
+      img.src = "bebagua.png";
+
+      trocarSlide(img);
+
+      setTimeout(() => {
+        mostrarDashboard();
+      }, tempoImagem);
+    }
+
+    // =============================
+    // TELA CHEIA AUTOMÁTICA
+    // =============================
+
+    function entrarTelaCheia() {
+      const elem = document.documentElement;
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(); // Safari
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen(); // Edge antigo
+      }
+    }
+
+    // Navegadores exigem interação → clique ativa
+    document.addEventListener("click", entrarTelaCheia);
+
+    // tenta entrar automaticamente
+    entrarTelaCheia();
+
+    // =============================
+    // INÍCIO DO SISTEMA
+    // =============================
+    mostrarDashboard();
   </script>
 </body>
 </html>
