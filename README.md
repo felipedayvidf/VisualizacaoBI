@@ -1,6 +1,6 @@
 # 📊 Visualização BI (Dashboard Rotator)
 
-Este projeto é um **visualizador automático de dashboards (Power BI)** com rotação em tela cheia, desenvolvido para uso em TVs, painéis corporativos ou monitores dedicados.
+Este projeto é um **visualizador automático de dashboards (Power BI)**, desenvolvido para uso em TVs, painéis corporativos ou monitores dedicados.
 
 ---
 
@@ -10,8 +10,6 @@ Este projeto é um **visualizador automático de dashboards (Power BI)** com rot
 ✅ Exibição de imagem de conscientização (hidratação)  
 ✅ Controle de tempo por slide  
 ✅ Ciclo automático de exibição  
-✅ Transições suaves (fade in/out)  
-✅ Modo tela cheia automático  
 ✅ Estrutura simples (apenas 1 arquivo HTML)  
 
 ---
@@ -29,3 +27,17 @@ O sistema segue o seguinte fluxo:
 ---
 
 ## 📁 Estrutura do projeto
+
+VisualizacaoBI/
+│
+├── index.html      # Código principal
+└── bebagua.png     # Imagem exibida a cada 30 minutos
+
+---
+
+## ⚙️ Como usar
+
+### 1. Clonar ou baixar
+
+```bash
+git clone https://github.com/seu-usuario/VisualizacaoBI.git
