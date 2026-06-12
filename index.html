@@ -42,7 +42,7 @@
       },
       {
         type: "image",
-        src: "https://raw.githubusercontent.com/felipedayvid/VisualizacaoBI/main/bebagua.png",
+        src: "bebagua.png",
         duration: 1 * 60 * 1000 // 1 minuto
       },
       {
@@ -56,39 +56,31 @@
     const container = document.getElementById("container");
 
     function renderSlide() {
-  const current = slides[index];
+      const current = slides[index];
 
-  container.innerHTML = "";
+      container.innerHTML = "";
 
-  let element;
+      let element;
 
-  if (current.type === "iframe") {
-    element = document.createElement("iframe");
-    element.src = current.src;
-    element.style.width = "100%";
-    element.style.height = "100%";
-    element.style.border = "none";
-  }
+      if (current.type === "iframe") {
+        element = document.createElement("iframe");
+        element.src = current.src;
+      }
 
-  if (current.type === "image") {
-    element = document.createElement("div");
+      if (current.type === "image") {
+        element = document.createElement("img");
+        element.src = current.src;
+      }
 
-    element.style.width = "100%";
-    element.style.height = "100%";
-    element.style.backgroundColor = "black";
-    element.style.backgroundImage = `url('${current.src}')`;
-    element.style.backgroundSize = "contain";
-    element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundPosition = "center";
-  }
+      container.appendChild(element);
 
-  container.appendChild(element);
+      setTimeout(() => {
+        index = (index + 1) % slides.length;
+        renderSlide();
+      }, current.duration);
+    }
 
-  setTimeout(() => {
-    index = (index + 1) % slides.length;
     renderSlide();
-  }, current.duration);
-}
   </script>
 </body>
 </html>
