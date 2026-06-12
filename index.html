@@ -6,7 +6,6 @@
   <title>Dashboard Rotator</title>
 
   <style>
-    /* Remove margens e deixa fundo preto */
     html, body {
       margin: 0;
       padding: 0;
@@ -16,30 +15,17 @@
       overflow: hidden;
     }
 
-    /* Container principal */
     #container {
       width: 100vw;
       height: 100vh;
-      position: relative;
     }
 
-    /* Classe base dos slides */
-    .slide {
-      position: absolute;
+    iframe, img {
       width: 100%;
       height: 100%;
       border: none;
       object-fit: contain;
       background: black;
-
-      opacity: 0; /* começa invisível */
-      transition: opacity 1s ease-in-out; /* efeito fade */
-    }
-
-    /* Slide ativo (visível) */
-    .active {
-      opacity: 1;
-      z-index: 2;
     }
   </style>
 </head>
@@ -51,7 +37,6 @@
     // =============================
     // CONFIGURAÇÃO DOS DASHBOARDS
     // =============================
-
     const dashboards = [
       {
         src: "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9"
@@ -61,71 +46,39 @@
       }
     ];
 
-    // Tempo de exibição
     const tempoDashboard = 5 * 60 * 1000; // 5 minutos
     const tempoImagem = 1 * 60 * 1000;    // 1 minuto
 
     // =============================
     // CONTROLE DE ESTADO
     // =============================
-
     let index = 0;
     let ciclosCompletos = 0;
 
     const container = document.getElementById("container");
-    let currentElement = null;
 
     // =============================
-    // FUNÇÃO DE TRANSIÇÃO (FADE)
-    // =============================
-    function trocarSlide(novoElemento) {
-      // aplica estilo base
-      novoElemento.classList.add("slide");
-
-      // adiciona ao DOM
-      container.appendChild(novoElemento);
-
-      // dispara fade-in
-      setTimeout(() => {
-        novoElemento.classList.add("active");
-      }, 10);
-
-      // remove o antigo com fade-out
-      if (currentElement) {
-        currentElement.classList.remove("active");
-
-        setTimeout(() => {
-          if (currentElement && currentElement.parentNode) {
-            currentElement.remove();
-          }
-        }, 1000);
-      }
-
-      currentElement = novoElemento;
-    }
-
-    // =============================
-    // MOSTRAR DASHBOARD (BI)
+    // MOSTRAR DASHBOARD
     // =============================
     function mostrarDashboard() {
-      const current = dashboards[index];
+      container.innerHTML = "";
 
       const iframe = document.createElement("iframe");
 
-      // truque para evitar cache travado do Power BI
-      iframe.src = current.src + "&t=" + new Date().getTime();
+      // Evita cache travado do Power BI
+      iframe.src = dashboards[index].src + "&t=" + new Date().getTime();
 
-      trocarSlide(iframe);
+      container.appendChild(iframe);
 
       setTimeout(() => {
         index++;
 
-        // se terminou a lista → ciclo completo
+        // terminou um ciclo completo?
         if (index >= dashboards.length) {
           index = 0;
           ciclosCompletos++;
 
-          // a cada 3 ciclos → mostrar imagem
+          // a cada 3 ciclos (30 minutos)
           if (ciclosCompletos === 3) {
             ciclosCompletos = 0;
             return mostrarImagem();
@@ -137,15 +90,15 @@
     }
 
     // =============================
-    // MOSTRAR IMAGEM (ÁGUA)
+    // MOSTRAR IMAGEM
     // =============================
     function mostrarImagem() {
-      const img = document.createElement("img");
+      container.innerHTML = "";
 
-      // IMPORTANTE: nome do arquivo deve ser igual no GitHub
+      const img = document.createElement("img");
       img.src = "bebagua.png";
 
-      trocarSlide(img);
+      container.appendChild(img);
 
       setTimeout(() => {
         mostrarDashboard();
@@ -153,29 +106,7 @@
     }
 
     // =============================
-    // TELA CHEIA AUTOMÁTICA
-    // =============================
-
-    function entrarTelaCheia() {
-      const elem = document.documentElement;
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(); // Safari
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen(); // Edge antigo
-      }
-    }
-
-    // Navegadores exigem interação → clique ativa
-    document.addEventListener("click", entrarTelaCheia);
-
-    // tenta entrar automaticamente
-    entrarTelaCheia();
-
-    // =============================
-    // INÍCIO DO SISTEMA
+    // INÍCIO
     // =============================
     mostrarDashboard();
   </script>
