@@ -1,43 +1,50 @@
-# 📊 Visualização BI (Dashboard Rotator)
+# 📊 Visualização BI com Controle por Horário
 
-Este projeto é um **visualizador automático de dashboards (Power BI)**, desenvolvido para uso em TVs, painéis corporativos ou monitores dedicados.
+Este projeto exibe um dashboard do Power BI em tela cheia com atualização automática e exibição periódica de uma imagem de conscientização.
 
 ---
 
 ## 🚀 Funcionalidades
 
-✅ Alternância automática entre dashboards (Power BI)  
-✅ Exibição de imagem de conscientização (hidratação)  
-✅ Controle de tempo por slide  
-✅ Ciclo automático de exibição  
-✅ Estrutura simples (apenas 1 arquivo HTML)  
+✅ Exibição contínua do Power BI  
+✅ Atualização automática a cada 5 minutos  
+✅ Exibição automática de imagem a cada meia hora  
+✅ Controle baseado no horário real do sistema  
+✅ Estrutura simples (1 arquivo HTML)  
 
 ---
 
-## 🧠 Lógica de funcionamento
+## 🧠 Lógica do sistema
 
-O sistema segue o seguinte fluxo:
-
-- 📊 Dashboard 1 → 5 minutos  
-- 📊 Dashboard 2 → 5 minutos  
-- 🔁 Repete esse ciclo 3 vezes (total de 30 minutos)  
-- 💧 Exibe imagem de conscientização ("beber água") por 1 minuto  
-- 🔁 Reinicia o processo  
+### 📊 BI (modo normal)
+- Exibido continuamente
+- Atualiza automaticamente a cada 5 minutos
 
 ---
 
-## 📁 Estrutura do projeto
+### 💧 Imagem de conscientização
 
-VisualizacaoBI/
-│
-├── index.html      # Código principal
-└── bebagua.png     # Imagem exibida a cada 30 minutos
+A imagem `bebagua.png` é exibida automaticamente:
+
+- 🕒 **Todo HH:00 até HH:03**
+- 🕒 **Todo HH:30 até HH:33**
+
+Exemplos:
+- 10:00 → imagem
+- 10:30 → imagem
+- 15:00 → imagem
+- 15:30 → imagem
 
 ---
 
-## ⚙️ Como usar
+### ⚠️ Prioridade
 
-### 1. Clonar ou baixar
+A imagem **sempre tem prioridade sobre o BI**, mesmo que:
 
-```bash
-git clone https://github.com/seu-usuario/VisualizacaoBI.git
+- esteja no momento de atualizar o dashboard
+- o BI esteja carregando
+
+---
+
+## 📁 Estrutura
+
