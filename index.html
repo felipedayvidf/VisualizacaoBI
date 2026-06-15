@@ -37,63 +37,91 @@
     // =============================
     // CONFIGURAÇÃO
     // =============================
-
     const BI_URL = "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9";
 
-    const tempoAtualizacao = 5 * 60 * 1000; // 5 minutos
-    const tempoImagem = 3 * 60 * 1000;     // 3 minutos
-
-    let contadorAtualizacoes = 0;
+    const tempoCheque = 10 * 1000; // a cada 10s verifica o relógio
+    const tempoAtualizacaoBI = 5 * 60 * 1000; // 5 min
 
     const container = document.getElementById("container");
 
+    let mostrandoImagem = false;
+    let ultimoReloadBI = 0;
+
     // =============================
-    // MOSTRAR BI
+    // VERIFICA RELÓGIO
     // =============================
-    function mostrarBI() {
-      container.innerHTML = "";
+    function deveMostrarImagem() {
+      const agora = new Date();
+      const minutos = agora.getMinutes();
 
-      const iframe = document.createElement("iframe");
-
-      // força atualização do Power BI (evita travamento)
-      iframe.src = BI_URL + "&t=" + new Date().getTime();
-
-      container.appendChild(iframe);
-
-      setTimeout(() => {
-        contadorAtualizacoes++;
-
-        // Após 6 ciclos (30 minutos)
-        if (contadorAtualizacoes === 6) {
-          contadorAtualizacoes = 0;
-          return mostrarImagem();
-        }
-
-        mostrarBI();
-      }, tempoAtualizacao);
+      // 00 até 03 ou 30 até 33
+      return (minutos >= 0 && minutos < 3) || (minutos >= 30 && minutos < 33);
     }
 
     // =============================
     // MOSTRAR IMAGEM
     // =============================
     function mostrarImagem() {
+      if (mostrandoImagem) return;
+
+      mostrandoImagem = true;
+
       container.innerHTML = "";
 
       const img = document.createElement("img");
-
       img.src = "https://raw.githubusercontent.com/felipedayvid/VisualizacaoBI/main/bebagua.png";
 
       container.appendChild(img);
 
-      setTimeout(() => {
-        mostrarBI();
-      }, tempoImagem);
+      console.log("🟢 Mostrando imagem (hidratação)");
     }
 
     // =============================
-    // INÍCIO
+    // MOSTRAR / ATUALIZAR BI
     // =============================
-    mostrarBI();
+    function mostrarBI() {
+      if (!mostrandoImagem) {
+        const agora = Date.now();
+
+        // Atualiza a cada 5 minutos
+        if (agora - ultimoReloadBI >= tempoAtualizacaoBI) {
+          ultimoReloadBI = agora;
+
+          container.innerHTML = "";
+
+          const iframe = document.createElement("iframe");
+
+          iframe.src = BI_URL + "&t=" + new Date().getTime();
+
+          container.appendChild(iframe);
+
+          console.log("🔵 Atualizando BI");
+        }
+      }
+    }
+
+    // =============================
+    // LOOP PRINCIPAL
+    // =============================
+    function loop() {
+      if (deveMostrarImagem()) {
+        mostrarImagem();
+      } else {
+        // saiu do período da imagem
+        if (mostrandoImagem) {
+          mostrandoImagem = false;
+          ultimoReloadBI = 0; // força reload imediato do BI
+        }
+
+        mostrarBI();
+      }
+    }
+
+    // roda continuamente
+    setInterval(loop, tempoCheque);
+
+    // inicialização imediata
+    loop();
   </script>
 </body>
 </html>
