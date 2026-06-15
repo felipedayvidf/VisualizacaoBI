@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Rotator</title>
+  <title>Visualizador de BI</title>
 
   <style>
     html, body {
@@ -35,58 +35,42 @@
 
   <script>
     // =============================
-    // CONFIGURAÇÃO DOS DASHBOARDS
+    // CONFIGURAÇÃO
     // =============================
-    const dashboards = [
-      {
-        src: "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9"
-      },
-      {
-        src: "https://app.powerbi.com/view?r=eyJrIjoiMWU4OTNmNjYtZTIzZi00MmM1LWE5YmEtYjlkMGRhOGQ0N2EyIiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9"
-      }
-    ];
 
-    const tempoDashboard = 5 * 60 * 1000; // 5 minutos
-    const tempoImagem = 1 * 60 * 1000;    // 1 minuto
+    const BI_URL = "https://app.powerbi.com/view?r=eyJrIjoiMjZmNzczMDgtYWIyNy00NjU4LTg0NWUtMzk0Nzk1YjU4OTc1IiwidCI6ImU4ZGQ5MDEzLTUxNjUtNDVjNi1iYjg5LWVlOTlhZDVlN2VjYiJ9";
 
-    // =============================
-    // CONTROLE DE ESTADO
-    // =============================
-    let index = 0;
-    let ciclosCompletos = 0;
+    const tempoAtualizacao = 5 * 60 * 1000; // 5 minutos
+    const tempoImagem = 3 * 60 * 1000;     // 3 minutos
+
+    let contadorAtualizacoes = 0;
 
     const container = document.getElementById("container");
 
     // =============================
-    // MOSTRAR DASHBOARD
+    // MOSTRAR BI
     // =============================
-    function mostrarDashboard() {
+    function mostrarBI() {
       container.innerHTML = "";
 
       const iframe = document.createElement("iframe");
 
-      // Evita cache travado do Power BI
-      iframe.src = dashboards[index].src + "&t=" + new Date().getTime();
+      // força atualização do Power BI (evita travamento)
+      iframe.src = BI_URL + "&t=" + new Date().getTime();
 
       container.appendChild(iframe);
 
       setTimeout(() => {
-        index++;
+        contadorAtualizacoes++;
 
-        // terminou um ciclo completo?
-        if (index >= dashboards.length) {
-          index = 0;
-          ciclosCompletos++;
-
-          // a cada 3 ciclos (30 minutos)
-          if (ciclosCompletos === 3) {
-            ciclosCompletos = 0;
-            return mostrarImagem();
-          }
+        // Após 6 ciclos (30 minutos)
+        if (contadorAtualizacoes === 6) {
+          contadorAtualizacoes = 0;
+          return mostrarImagem();
         }
 
-        mostrarDashboard();
-      }, tempoDashboard);
+        mostrarBI();
+      }, tempoAtualizacao);
     }
 
     // =============================
@@ -96,19 +80,20 @@
       container.innerHTML = "";
 
       const img = document.createElement("img");
-      img.src = "bebagua.png";
+
+      img.src = "https://raw.githubusercontent.com/felipedayvid/VisualizacaoBI/main/bebagua.png";
 
       container.appendChild(img);
 
       setTimeout(() => {
-        mostrarDashboard();
+        mostrarBI();
       }, tempoImagem);
     }
 
     // =============================
     // INÍCIO
     // =============================
-    mostrarDashboard();
+    mostrarBI();
   </script>
 </body>
 </html>
